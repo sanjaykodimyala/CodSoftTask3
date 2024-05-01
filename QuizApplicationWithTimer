@@ -1,0 +1,97 @@
+import java.util.Scanner;
+
+public class QuizApp {
+    public static class QuizQuestion {
+        private String question;
+        private String[] options;
+        private int correctOptionIndex;
+
+        public QuizQuestion(String question, String[] options, int correctOptionIndex) {
+            this.question = question;
+            this.options = options;
+            this.correctOptionIndex = correctOptionIndex;
+        }
+
+        public String getQuestion() {
+            return question;
+        }
+
+        public String[] getOptions() {
+            return options;
+        }
+
+        public int getCorrectOptionIndex() {
+            return correctOptionIndex;
+        }
+    }
+
+    public static void main(String[] args) {
+        final int QUESTION_TIME_LIMIT_SECONDS = 10;
+        final QuizQuestion[] quizQuestions = {
+            new QuizQuestion("What is the capital of France?", new String[]{"A. Paris", "B. London", "C. Rome", "D. Madrid"}, 0),
+            new QuizQuestion("Which planet is known as the Red Planet?", new String[]{"A. Venus", "B. Mars", "C. Jupiter", "D. Saturn"}, 1),
+            new QuizQuestion("What is the powerhouse of the cell?", new String[]{"A. Nucleus", "B. Ribosome", "C. Mitochondrion", "D. Chloroplast"}, 2)
+        };
+
+        int score = 0;
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Welcome to the Quiz!");
+
+        for (int i = 0; i < quizQuestions.length; i++) {
+            QuizQuestion currentQuestion = quizQuestions[i];
+            displayQuestion(currentQuestion);
+
+            System.out.println("You have " + QUESTION_TIME_LIMIT_SECONDS + " seconds to answer.");
+            System.out.print("Enter your choice (A, B, C, or D): ");
+
+            long startTime = System.currentTimeMillis();
+            String userAnswer = scanner.nextLine().trim().toUpperCase();
+            long endTime = System.currentTimeMillis();
+            long elapsedTimeSeconds = (endTime - startTime) / 1000;
+
+            if (elapsedTimeSeconds <= QUESTION_TIME_LIMIT_SECONDS) {
+                if (isValidOption(userAnswer)) {
+                    int userChoiceIndex = userAnswer.charAt(0) - 'A';
+                    if (userChoiceIndex == currentQuestion.getCorrectOptionIndex()) {
+                        System.out.println("Correct!");
+                        score++;
+                    } else {
+                        System.out.println("Incorrect!");
+                    }
+                } else {
+                    System.out.println("Invalid choice. Skipping to next question.");
+                }
+            } else {
+                System.out.println("Time's up! Moving to the next question.");
+            }
+
+            System.out.println();
+        }
+
+        System.out.println("Quiz completed!");
+        System.out.println("Your final score is: " + score + "/" + quizQuestions.length);
+        displaySummary(quizQuestions);
+
+        scanner.close();
+    }
+
+    private static void displayQuestion(QuizQuestion question) {
+        System.out.println(question.getQuestion());
+        for (String option : question.getOptions()) {
+            System.out.println(option);
+        }
+    }
+
+    private static boolean isValidOption(String answer) {
+        return answer.length() == 1 && (answer.charAt(0) >= 'A' && answer.charAt(0) <= 'D');
+    }
+
+    private static void displaySummary(QuizQuestion[] questions) {
+        for (int i = 0; i < questions.length; i++) {
+            QuizQuestion question = questions[i];
+            char correctOption = (char) ('A' + question.getCorrectOptionIndex());
+            System.out.println("Question " + (i + 1) + ": " + question.getQuestion() + " (Correct Answer: " + correctOption + ")");
+        }
+    }
+}
